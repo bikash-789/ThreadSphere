@@ -16,6 +16,7 @@ import * as z from "zod";
 import { usePathname, useRouter } from "next/navigation";
 import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
+import { useOrganization } from "@clerk/nextjs";
 
 // Define the type for the component props
 interface Props {
@@ -34,6 +35,7 @@ function PostThread({ userId }: { userId: string }) {
   // React component with TypeScript
   const router = useRouter();
   const pathname = usePathname();
+  const { organization } = useOrganization();
 
   const form = useForm({
     // resolver - determines how the form should be validated,
@@ -50,7 +52,7 @@ function PostThread({ userId }: { userId: string }) {
     await createThread({
       text: values.thread,
       author: userId,
-      communityId: null,
+      communityId: organization ? organization.id : null,
       path: pathname,
     });
 
