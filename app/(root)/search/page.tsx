@@ -1,5 +1,6 @@
 import UserCard from "@/components/cards/UserCard";
 import ProfileHeader from "@/components/shared/ProfileHeader";
+import Searchbar from "@/components/shared/Searchbar";
 import ThreadsTab from "@/components/shared/ThreadsTab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profileTabs } from "@/constants";
@@ -28,6 +29,7 @@ const Page = async () => {
     <section>
       <h1 className="head-text mb-10">Search</h1>
       {/* Search bar */}
+      <Searchbar routeType="search" />
       <div className="mt-14 flex flex-col gap-9">
         {result.users.length === 0 ? (
           <p className="no-result">No users</p>
