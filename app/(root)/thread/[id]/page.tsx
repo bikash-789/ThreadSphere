@@ -3,7 +3,7 @@ import Comment from "@/components/forms/Comment";
 import { fetchThreadById } from "@/lib/actions/thread.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 
 export default async function Page({ params }: { params: { id: string } }) {
   if (!params.id) return null;
@@ -13,7 +13,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   const userInfo = await fetchUser(user.id);
-  if (!userInfo?.onboarded) redirect("/onboarding");
+  // if (!userInfo?.onboarded) redirect("/onboarding");
 
   const thread = await fetchThreadById(params.id);
   return (
@@ -21,6 +21,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       <div>
         <ThreadCard
           key={thread._id}
+          likedBy={thread.likedBy}
           id={thread._id}
           currentUserId={user?.id || ""}
           parentId={thread.parentId}
@@ -42,6 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         {thread.children.map((childItem: any) => {
           return (
             <ThreadCard
+              likedBy={childItem.likedBy}
               key={childItem._id}
               id={childItem._id}
               currentUserId={user?.id || ""}

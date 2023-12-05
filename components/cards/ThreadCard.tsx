@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import { useState } from "react";
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
+import { likeThread } from "@/lib/actions/thread.actions";
+import LikeThread from "../forms/LikeThread";
 
 interface Props {
   id: string;
@@ -14,6 +16,12 @@ interface Props {
     image: string;
     id: string;
   };
+  likedBy: {
+    id: String;
+    name: String;
+    username: String;
+    image: String;
+  }[];
   community: {
     id: string;
     name: string;
@@ -34,6 +42,7 @@ function ThreadCard({
   parentId,
   content,
   author,
+  likedBy,
   community,
   createdAt,
   comments,
@@ -71,17 +80,15 @@ function ThreadCard({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3.5">
-                <Image
-                  src="/assets/heart-gray.svg"
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
+                {/* LikeThread */}
+                <LikeThread
+                  threadId={JSON.stringify(id)}
+                  currentUserId={currentUserId}
                 />
                 <Link href={`/thread/${id}`}>
                   <Image
                     src="/assets/reply.svg"
-                    alt="heart"
+                    alt="comment"
                     width={24}
                     height={24}
                     className="cursor-pointer object-contain"
@@ -89,20 +96,25 @@ function ThreadCard({
                 </Link>
                 <Image
                   src="/assets/repost.svg"
-                  alt="heart"
+                  alt="repost"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
                 />
                 <Image
                   src="/assets/share.svg"
-                  alt="heart"
+                  alt="share"
                   width={24}
                   height={24}
                   className="cursor-pointer object-contain"
                 />
               </div>
-
+              {/* likes count */}
+              {likedBy && likedBy.length > 0 && (
+                <small className="text-gray-1">
+                  {likedBy.length.toString()} likes
+                </small>
+              )}
               {isComment && comments.length > 0 && (
                 <Link href={`/thread/${id}`}>
                   <p className="mt-1 text-subtle-medium text-gray-1">

@@ -17,6 +17,7 @@ export default async function Home() {
           <>
             {results.posts.map((post) => (
               <ThreadCard
+                likedBy={post.likedBy}
                 key={post._id}
                 id={post._id}
                 currentUserId={user?.id || ""}

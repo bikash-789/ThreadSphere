@@ -2,7 +2,7 @@ import CommunityCard from "@/components/cards/CommunityCard";
 import { fetchCommunities } from "@/lib/actions/community.actions";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 
 const Page = async () => {
   const user = await currentUser();
@@ -10,7 +10,7 @@ const Page = async () => {
 
   const userInfo = await fetchUser(user.id);
 
-  if (!userInfo?.onboarded) redirect("/onboarding");
+  // if (!userInfo?.onboarded) redirect("/onboarding");
 
   //   Fetch communities
   const result = await fetchCommunities({

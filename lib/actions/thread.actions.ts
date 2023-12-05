@@ -11,41 +11,46 @@ import Community from "../models/community.model";
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
   connectToDB();
 
-  // Calculate the number of posts to skip based on the page number and page size.
-  const skipAmount = (pageNumber - 1) * pageSize;
+  try {
+    const skipAmount = (pageNumber - 1) * pageSize;
 
-  // Create a query to fetch the posts that have no parent (top-level threads) (a thread that is not a comment/reply).
-  const postsQuery = Thread.find({ parentId: { $in: [null, undefined] } })
-    .sort({ createdAt: "desc" })
-    .skip(skipAmount)
-    .limit(pageSize)
-    .populate({
-      path: "author",
-      model: User,
-    })
-    .populate({
-      path: "community",
-      model: Community,
-    })
-    .populate({
-      path: "children", // Populate the children field
-      populate: {
-        path: "author", // Populate the author field within children
-        model: User,
-        select: "_id name parentId image", // Select only _id and username fields of the author
-      },
+    const postsQuery = Thread.find({ parentId: { $in: [null, undefined] } })
+      .sort({ createdAt: "desc" })
+      .skip(skipAmount)
+      .limit(pageSize)
+      .populate({
+        path: "author",
+        model: "User",
+      })
+      .populate({
+        path: "community",
+        model: "Community",
+      })
+      .populate({
+        path: "likedBy",
+        model: "User",
+        select: "_id name username image",
+      })
+      .populate({
+        path: "children",
+        populate: {
+          path: "author",
+          model: "User",
+          select: "_id name parentId image",
+        },
+      });
+
+    const totalPostsCount = await Thread.countDocuments({
+      parentId: { $in: [null, undefined] },
     });
 
-  // Count the total number of top-level posts (threads) i.e., threads that are not comments.
-  const totalPostsCount = await Thread.countDocuments({
-    parentId: { $in: [null, undefined] },
-  }); // Get the total count of posts
+    const posts = await postsQuery.exec();
+    const isNext = totalPostsCount > skipAmount + posts.length;
 
-  const posts = await postsQuery.exec();
-
-  const isNext = totalPostsCount > skipAmount + posts.length;
-
-  return { posts, isNext };
+    return { posts, isNext };
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 }
 
 interface Params {
@@ -175,7 +180,12 @@ export async function fetchThreadById(threadId: string) {
         path: "community",
         model: Community,
         select: "_id id name image",
-      }) // Populate the community field with _id and name
+      })
+      .populate({
+        path: "likedBy",
+        model: User,
+      })
+      // Populate the community field with _id and name
       .populate({
         path: "children", // Populate the children field
         populate: [
@@ -240,5 +250,61 @@ export async function addCommentToThread(
   } catch (err) {
     console.error("Error while adding comment:", err);
     throw new Error("Unable to add comment");
+  }
+}
+
+export async function likeThread(
+  threadId: string,
+  userId: string,
+  path: string
+): Promise<void> {
+  try {
+    connectToDB();
+    const user = await User.findOne({ id: userId });
+    const thread = await Thread.findByIdAndUpdate(
+      threadId,
+      { $addToSet: { likedBy: user._id } },
+      { new: true }
+    );
+    revalidatePath(path);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function unlikeThread(
+  threadId: string,
+  userId: string,
+  path: string
+): Promise<void> {
+  try {
+    connectToDB();
+    const user = await User.findOne({ id: userId });
+    const thread = await Thread.findByIdAndUpdate(
+      threadId,
+      { $pull: { likedBy: user._id } },
+      { new: true }
+    );
+    revalidatePath(path);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+export async function isLiked(threadId: string, userId: string) {
+  try {
+    connectToDB();
+    const user = await User.findOne({ id: userId });
+    const thread = await Thread.find(
+      {
+        _id: threadId,
+        likedBy: { $in: user._id },
+      },
+      { likedBy: 1 }
+    ).exec();
+
+    return thread;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }

@@ -2,7 +2,7 @@ import UserCard from "@/components/cards/UserCard";
 import Searchbar from "@/components/shared/Searchbar";
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 
 const Page = async () => {
   const user = await currentUser();
@@ -10,7 +10,7 @@ const Page = async () => {
 
   const userInfo = await fetchUser(user.id);
 
-  if (!userInfo?.onboarded) redirect("/onboarding");
+  // if (!userInfo?.onboarded) redirect("/onboarding");
 
   //   Fetch users
   const result = await fetchUsers({

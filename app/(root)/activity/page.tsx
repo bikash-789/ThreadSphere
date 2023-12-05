@@ -2,7 +2,7 @@ import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 
 const Page = async () => {
   const user = await currentUser();
@@ -10,7 +10,7 @@ const Page = async () => {
 
   const userInfo = await fetchUser(user.id);
 
-  if (!userInfo?.onboarded) redirect("/onboarding");
+  // if (!userInfo?.onboarded) redirect("/onboarding");
 
   // getActivity
   const activity = await getActivity(userInfo._id);
