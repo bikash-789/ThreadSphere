@@ -1,12 +1,11 @@
 "use server";
 
-import { FilterQuery, SortOrder } from "mongoose";
+import { FilterQuery, SortOrder, ObjectIdExpression, ObjectId } from "mongoose";
 import { revalidatePath } from "next/cache";
-
+import mongoose from "mongoose";
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
-
 import { connectToDB } from "../mongoose";
 
 export async function fetchUser(userId: string) {
@@ -178,6 +177,35 @@ export async function getActivity(userId: string) {
     return replies;
   } catch (error) {
     console.error("Error fetching replies: ", error);
+    throw error;
+  }
+}
+
+export async function getLikedByActivity(userId: string) {
+  try {
+    connectToDB();
+
+    // Query for threads where author is the specified user
+    const threads = await Thread.find({ author: userId })
+      .populate("author")
+      .populate({ path: "likedBy", model: "User", select: "name _id image" })
+      .exec();
+    const likedByOthers = threads.filter((thread) => {
+      return (
+        thread.likedBy &&
+        thread.likedBy.length > 0 &&
+        thread.likedBy.some((likedUser: any) => {
+          // Check if likedUser._id is defined and not equal to the thread author
+          return (
+            likedUser && likedUser._id && !likedUser._id.equals(thread.author)
+          );
+        })
+      );
+    });
+    console.log(likedByOthers);
+    return likedByOthers;
+  } catch (error) {
+    console.error("Error fetching likes:", error);
     throw error;
   }
 }
