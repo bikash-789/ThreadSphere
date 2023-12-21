@@ -2,6 +2,7 @@ import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { formatDateString } from "@/lib/utils";
 // import { redirect } from "next/navigation";
 
 const Page = async () => {
@@ -43,6 +44,9 @@ const Page = async () => {
                         </span>{" "}
                         replied to your thread.
                       </p>
+                      <span className="text-subtle-medium text-gray-1 ml-auto">
+                        {formatDateString(activity.createdAt)}
+                      </span>
                     </article>
                   </Link>
                 );
@@ -74,7 +78,9 @@ const Page = async () => {
                       </span>
                       liked your thread.
                     </p>
-                    <span></span>
+                    <span className="text-subtle-medium text-gray-1 ml-auto">
+                      {formatDateString(like.createdAt)}
+                    </span>
                   </article>
                 </Link>
               ))}

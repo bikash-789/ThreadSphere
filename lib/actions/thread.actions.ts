@@ -183,8 +183,13 @@ export async function fetchThreadById(threadId: string) {
         select: "_id id name image",
       })
       .populate({
-        path: "likedBy",
-        model: User,
+        path: "likes",
+        model: "Like",
+        populate: {
+          path: "likedBy",
+          model: "User",
+          select: "_id name image",
+        },
       })
       // Populate the community field with _id and name
       .populate({
