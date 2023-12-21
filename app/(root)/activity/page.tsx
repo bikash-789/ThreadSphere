@@ -1,11 +1,8 @@
-import {
-  fetchUser,
-  getActivity,
-  getLikedByActivity,
-} from "@/lib/actions/user.actions";
+import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { formatDateString } from "@/lib/utils";
 // import { redirect } from "next/navigation";
 
 const Page = async () => {
@@ -18,80 +15,83 @@ const Page = async () => {
 
   // getActivity
   const activity = await getActivity(userInfo._id);
-  const likedThreads = await getLikedByActivity(userInfo._id);
   return (
     <section>
       <h1 className="head-text mb-10">Activity</h1>
       <section className="mt-10 flex flex-col gap-5">
-        {activity.length > 0 ? (
+        {activity.replies.length > 0 ? (
           <>
-            {activity.map((activity) => {
-              return (
-                <Link key={activity._id} href={`/thread/${activity.parentId}`}>
-                  <article className="activity-card">
-                    <Image
-                      src={activity.author.image}
-                      alt="profile photo"
-                      width={20}
-                      height={20}
-                      className="rounded-full object-cover"
-                    />
-                    <p className="text-small-regular text-light-1">
-                      <span className="mr-1 text-primary-500">
-                        {activity.author.name}
-                      </span>{" "}
-                      replied to your thread.
-                    </p>
-                  </article>
-                </Link>
-              );
-            })}
-          </>
-        ) : (
-          ""
-        )}
-        {likedThreads.length > 0 ? (
-          <>
-            {likedThreads.map((thread) => {
-              const authorIdString = thread.author._id.toString();
-
-              const filteredLikes = thread.likedBy.filter(
-                (people: any) => people._id.toString() !== authorIdString
-              );
-
-              if (filteredLikes.length > 0) {
+            {activity.replies &&
+              activity.replies.map((activity) => {
                 return (
-                  <Link key={filteredLikes._id} href={`/thread/${thread._id}`}>
-                    {filteredLikes.map((people: any) => (
-                      <article className="activity-card" key={people._id}>
+                  <Link
+                    key={activity._id}
+                    href={`/thread/${activity.parentId}`}
+                  >
+                    <article className="activity-card">
+                      <div className="w-[24px] h-[24px] rounded-full overflow-clip">
                         <Image
-                          src={people.image}
-                          alt="profile"
-                          width={20}
-                          height={20}
-                          className="rounded-full object-cover"
+                          src={activity.author.image}
+                          alt="profile photo"
+                          width={24}
+                          height={24}
+                          className="rounded-full object-cover overflow-clip"
                         />
-                        <p className="text-small-regular text-light-1">
-                          <span className="mr-1 text-primary-500">
-                            {people.name}
-                          </span>{" "}
-                          liked your thread.
-                        </p>
-                        <span></span>
-                      </article>
-                    ))}
+                      </div>
+                      <p className="text-small-regular text-light-1">
+                        <span className="mr-1 text-primary-500">
+                          {activity.author.name}
+                        </span>{" "}
+                        replied to your thread.
+                      </p>
+                      <span className="text-subtle-medium text-gray-1 ml-auto">
+                        {formatDateString(activity.createdAt)}
+                      </span>
+                    </article>
                   </Link>
                 );
-              }
-              return null; // Skip rendering if there are no filtered likes
-            })}
+              })}
           </>
         ) : (
           ""
         )}
-        {activity.length < 1 && likedThreads.length < 1 && (
-          <p className="text-base-regular text-light-3">No activity yet</p>
+        {activity.likes?.length > 0 && (
+          <>
+            {activity.likes &&
+              activity.likes.map((like: any) => (
+                <Link key={like._id} href={`/thread/${like.threadId}`}>
+                  {" "}
+                  // Assuming link is for the thread
+                  <article className="activity-card">
+                    <div className="w-[24px] h-[24px] rounded-full overflow-clip">
+                      <Image
+                        src={like.likedBy.image} // Accessing liked user details
+                        alt="profile photo"
+                        width={24}
+                        height={24}
+                        className="rounded-full object-cover overflow-clip"
+                      />
+                    </div>
+                    <p className="text-small-regular text-light-1">
+                      <span className="mr-1 text-primary-500">
+                        {like.likedBy.name}
+                      </span>
+                      liked your thread.
+                    </p>
+                    <span className="text-subtle-medium text-gray-1 ml-auto">
+                      {formatDateString(like.createdAt)}
+                    </span>
+                  </article>
+                </Link>
+              ))}
+          </>
         )}
+        {activity.likes &&
+          activity.replies &&
+          activity.likes.length < 1 &&
+          activity.replies.length < 1 && (
+            <p className="text-base-regular text-light-3">No activity yet</p>
+          )}
       </section>
     </section>
   );

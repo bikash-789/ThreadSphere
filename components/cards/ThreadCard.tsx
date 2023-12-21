@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
-import { likeThread } from "@/lib/actions/thread.actions";
 import LikeThread from "../forms/LikeThread";
 
 interface Props {
@@ -57,7 +55,10 @@ function ThreadCard({
       <div className="flex items-start justify-between">
         <div className="flex w-full flex-1 flex-row gap-4">
           <div className="flex flex-col items-center">
-            <Link href={`/profile/${author.id}`} className="relative h-11 w-11">
+            <Link
+              href={`/profile/${author.id}`}
+              className="relative h-11 w-11 overflow-clip rounded-full"
+            >
               <Image
                 src={author.image}
                 alt="user_community_image"
@@ -115,6 +116,7 @@ function ThreadCard({
                   {likedBy.length.toString()} likes
                 </small>
               )}
+              {/* Replies count */}
               {isComment && comments.length > 0 && (
                 <Link href={`/thread/${id}`}>
                   <p className="mt-1 text-subtle-medium text-gray-1">
@@ -138,14 +140,20 @@ function ThreadCard({
       {!isComment && comments.length > 0 && (
         <div className="ml-1 mt-3 flex items-center gap-2">
           {comments.slice(0, 2).map((comment, index) => (
-            <Image
-              key={index}
-              src={comment.author.image}
-              alt={`user_${index}`}
-              width={24}
-              height={24}
-              className={`${index !== 0 && "-ml-5"} rounded-full object-cover`}
-            />
+            <div
+              className={`${
+                index !== 0 && "-ml-[12px]"
+              } w-[24px] h-[24px] overflow-clip rounded-full `}
+            >
+              <Image
+                key={index}
+                src={comment.author.image}
+                alt={`user_${index}`}
+                width={24}
+                height={24}
+                className={` rounded-full`}
+              />
+            </div>
           ))}
 
           <Link href={`/thread/${id}`}>
@@ -162,18 +170,25 @@ function ThreadCard({
           className="mt-5 flex items-center"
         >
           <p className="text-subtle-medium text-gray-1">
-            {formatDateString(createdAt)}
-            {community && ` - ${community.name} Community`}
+            <span>{formatDateString(createdAt)}</span>
+            <span>
+              {community && ` - ${community.name} Community`}{" "}
+              <Image
+                src={community.image}
+                alt={community.name}
+                width={14}
+                height={14}
+                className="ml-1 rounded-full object-cover inline-block"
+              />
+            </span>
           </p>
-
-          <Image
-            src={community.image}
-            alt={community.name}
-            width={14}
-            height={14}
-            className="ml-1 rounded-full object-cover"
-          />
         </Link>
+      )}
+      {/* Date */}
+      {!isComment && !community && (
+        <p className="text-subtle-medium text-gray-1 mt-5">
+          {formatDateString(createdAt)}
+        </p>
       )}
     </article>
   );

@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+import Link from "next/link";
 interface Props {
   accountId: string;
   authUserId: string;
@@ -18,7 +18,6 @@ const ProfileHeader = ({
   bio,
   type,
 }: Props) => {
-  console.log(name);
   return (
     <div className="flex w-full flex-col justify-start">
       <div className="flex items-center justify-between">
@@ -40,8 +39,21 @@ const ProfileHeader = ({
         </div>
       </div>
       {/* TODO: Community */}
-      <p className="mt-6 max-w-lg text-base-regular text-light-2">{bio}</p>
-      <div className="mt-12 h-0 5 w-full bg-dark-3" />
+      {/* BIO */}
+      <div className="flex justify-start items-center">
+        <p className="mt-6 max-w-lg text-base-regular text-light-2 block">
+          {bio}
+        </p>
+      </div>
+
+      <div className="my-2 lg:my-4 w-full flex justify-between lg:justify-start gap-x-3">
+        <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
+          <Link href="/update-profile">Edit Profile</Link>
+        </button>
+        <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
+          <Link href="">Share Profile</Link>
+        </button>
+      </div>
     </div>
   );
 };

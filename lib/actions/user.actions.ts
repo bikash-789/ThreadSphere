@@ -1,8 +1,7 @@
 "use server";
 
-import { FilterQuery, SortOrder, ObjectIdExpression, ObjectId } from "mongoose";
+import { FilterQuery, SortOrder } from "mongoose";
 import { revalidatePath } from "next/cache";
-import mongoose from "mongoose";
 import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
@@ -93,7 +92,7 @@ export async function fetchUserPosts(userId: string) {
   }
 }
 
-// Almost similar to Thead (search + pagination) and Community (search + pagination)
+// Almost similar to Thread (search + pagination) and Community (search + pagination)
 export async function fetchUsers({
   userId,
   searchString = "",
@@ -156,56 +155,53 @@ export async function getActivity(userId: string) {
   try {
     connectToDB();
 
-    // Find all threads created by the user
-    const userThreads = await Thread.find({ author: userId });
+    // 1. Find user threads with populated likes and user details
+    const userThreads = await Thread.find({ author: userId })
+      .populate({
+        path: "likes",
+        model: "Like",
+        populate: {
+          path: "likedBy",
+          model: "User",
+          select: "_id name image",
+        },
+      })
+      .lean()
+      .exec();
+    // 2. Extract and filter likes from user threads
+    const likes = userThreads.reduce((acc, thread) => {
+      return acc.concat(
+        thread.likes.filter(
+          (like: any) =>
+            like.likedBy._id.toString() !== thread.author._id.toString()
+        )
+      );
+    }, []);
 
-    // Collect all the child thread ids (replies) from the 'children' field of each user thread
+    // 3. Collect child thread ids (replies)
     const childThreadIds = userThreads.reduce((acc, userThread) => {
       return acc.concat(userThread.children);
     }, []);
 
-    // Find and return the child threads (replies) excluding the ones created by the same user
+    // 4. Find replies excluding those authored by the same user
     const replies = await Thread.find({
       _id: { $in: childThreadIds },
-      author: { $ne: userId }, // Exclude threads authored by the same user
+      author: { $ne: userId },
     }).populate({
       path: "author",
-      model: User,
+      model: "User",
       select: "name image _id",
     });
 
-    return replies;
+    // 5. Combine activity data
+    const activity = {
+      replies,
+      likes,
+    };
+    // console.log(activity);
+    return activity;
   } catch (error) {
-    console.error("Error fetching replies: ", error);
-    throw error;
-  }
-}
-
-export async function getLikedByActivity(userId: string) {
-  try {
-    connectToDB();
-
-    // Query for threads where author is the specified user
-    const threads = await Thread.find({ author: userId })
-      .populate("author")
-      .populate({ path: "likedBy", model: "User", select: "name _id image" })
-      .exec();
-    const likedByOthers = threads.filter((thread) => {
-      return (
-        thread.likedBy &&
-        thread.likedBy.length > 0 &&
-        thread.likedBy.some((likedUser: any) => {
-          // Check if likedUser._id is defined and not equal to the thread author
-          return (
-            likedUser && likedUser._id && !likedUser._id.equals(thread.author)
-          );
-        })
-      );
-    });
-    console.log(likedByOthers);
-    return likedByOthers;
-  } catch (error) {
-    console.error("Error fetching likes:", error);
+    console.error("Error fetching activity: ", error);
     throw error;
   }
 }

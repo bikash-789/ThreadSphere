@@ -6,6 +6,7 @@ import { connectToDB } from "../mongoose";
 
 import User from "../models/user.model";
 import Thread from "../models/thread.model";
+import Like from "../models/like.model";
 import Community from "../models/community.model";
 
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
@@ -27,9 +28,9 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
         model: "Community",
       })
       .populate({
-        path: "likedBy",
-        model: "User",
-        select: "_id name username image",
+        path: "likes",
+        model: "Like",
+        select: "_id threadId likedBy",
       })
       .populate({
         path: "children",
@@ -182,8 +183,13 @@ export async function fetchThreadById(threadId: string) {
         select: "_id id name image",
       })
       .populate({
-        path: "likedBy",
-        model: User,
+        path: "likes",
+        model: "Like",
+        populate: {
+          path: "likedBy",
+          model: "User",
+          select: "_id name image",
+        },
       })
       // Populate the community field with _id and name
       .populate({
@@ -261,9 +267,18 @@ export async function likeThread(
   try {
     connectToDB();
     const user = await User.findOne({ id: userId });
-    const thread = await Thread.findByIdAndUpdate(
+    // Create a new Like document
+    const newLike = new Like({
+      likedBy: user._id,
+      threadId: threadId,
+    });
+
+    // Save the new Like document
+    const savedLike = await newLike.save();
+    // Update the likes array in the Thread model
+    const updatedThread = await Thread.findByIdAndUpdate(
       threadId,
-      { $addToSet: { likedBy: user._id } },
+      { $addToSet: { likes: savedLike._id } },
       { new: true }
     );
     revalidatePath(path);
@@ -280,9 +295,15 @@ export async function unlikeThread(
   try {
     connectToDB();
     const user = await User.findOne({ id: userId });
+    // Find the like _id from Like documents
+    const like = await Like.findOne({ threadId: threadId, likedBy: user._id });
+    // if the like exist then remove from Like documents
+    await Like.findByIdAndDelete({ _id: like._id });
+
+    // Also, update the thread's likes array
     const thread = await Thread.findByIdAndUpdate(
       threadId,
-      { $pull: { likedBy: user._id } },
+      { $pull: { likes: like._id } },
       { new: true }
     );
     revalidatePath(path);
@@ -295,15 +316,11 @@ export async function isLiked(threadId: string, userId: string) {
   try {
     connectToDB();
     const user = await User.findOne({ id: userId });
-    const thread = await Thread.find(
-      {
-        _id: threadId,
-        likedBy: { $in: user._id },
-      },
-      { likedBy: 1 }
-    ).exec();
-
-    return thread;
+    const like = await Like.find({
+      likedBy: user._id,
+      threadId: threadId,
+    });
+    return like;
   } catch (error: any) {
     throw new Error(error.message);
   }
