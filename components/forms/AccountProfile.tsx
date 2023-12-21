@@ -95,7 +95,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
       path: pathname,
     });
 
-    if (pathname === "/profile/edit") {
+    if (pathname === "/update-profile") {
       router.back();
     } else {
       router.push("/");
@@ -206,7 +206,7 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
           )}
         />
         <Button type="submit" className="bg-primary-500">
-          Submit
+          {btnTitle}
         </Button>
       </form>
     </Form>

@@ -58,13 +58,15 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
           render={({ field }) => (
             <FormItem className="flex w-full items-center gap-3">
               <FormLabel>
-                <Image
-                  src={currentUserImg}
-                  alt="Profile image"
-                  width={48}
-                  height={48}
-                  className="w-full rounded-full object-cover"
-                />
+                <div className="w-[48px] h-[48px] overflow-clip rounded-full">
+                  <Image
+                    src={currentUserImg}
+                    alt="Profile image"
+                    width={48}
+                    height={48}
+                    className="w-full rounded-full object-cover overflow-clip"
+                  />
+                </div>
               </FormLabel>
               <FormControl className="no-focus border border-dark-4 bg-dark-3 text-light-1">
                 <Input
@@ -77,7 +79,7 @@ const Comment = ({ threadId, currentUserImg, currentUserId }: Props) => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="comment-form_btn">
+        <Button type="submit" className="comment-form_btn ">
           Reply
         </Button>
       </form>
