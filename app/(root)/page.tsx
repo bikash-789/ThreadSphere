@@ -6,7 +6,6 @@ export default async function Home() {
   const results = await fetchPosts(1, 30);
   const user = await currentUser();
 
-  // console.log(results);
   return (
     <>
       <h1 className="head-text text-left">Home</h1>

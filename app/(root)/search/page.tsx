@@ -2,7 +2,6 @@ import UserCard from "@/components/cards/UserCard";
 import Searchbar from "@/components/shared/Searchbar";
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-// import { redirect } from "next/navigation";
 
 const Page = async () => {
   const user = await currentUser();
