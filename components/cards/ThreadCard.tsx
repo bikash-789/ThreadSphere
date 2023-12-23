@@ -136,7 +136,7 @@ function ThreadCard({
           isComment={isComment}
         />
       </div>
-
+      {/* Show the user avatars if they have replied to the thread post */}
       {!isComment && comments.length > 0 && (
         <div className="ml-1 mt-3 flex items-center gap-2">
           {comments.slice(0, 2).map((comment, index) => (
@@ -163,7 +163,7 @@ function ThreadCard({
           </Link>
         </div>
       )}
-
+      {/* Show the community avatar if the post is posted by Community member */}
       {!isComment && community && (
         <Link
           href={`/communities/${community.id}`}
@@ -185,11 +185,11 @@ function ThreadCard({
         </Link>
       )}
       {/* Date */}
-      {!isComment && !community && (
+      {
         <p className="text-subtle-medium text-gray-1 mt-5">
           {formatDateString(createdAt)}
         </p>
-      )}
+      }
     </article>
   );
 }

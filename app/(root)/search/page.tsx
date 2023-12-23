@@ -3,7 +3,14 @@ import Searchbar from "@/components/shared/Searchbar";
 import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 
-const Page = async () => {
+import Pagination from "@/components/shared/Pagination";
+
+
+const Page = async ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) => {
   const user = await currentUser();
   if (!user) return null;
 
@@ -14,8 +21,8 @@ const Page = async () => {
   //   Fetch users
   const result = await fetchUsers({
     userId: user.id,
-    searchString: "",
-    pageNumber: 1,
+    searchString: searchParams.q,
+    pageNumber: searchParams?.page ? +searchParams.page : 1,
     pageSize: 25,
   });
 
@@ -43,6 +50,11 @@ const Page = async () => {
           </>
         )}
       </div>
+      <Pagination
+        path="search"
+        pageNumber={searchParams?.page ? +searchParams.page : 1}
+        isNext={result.isNext}
+      />
     </section>
   );
 };

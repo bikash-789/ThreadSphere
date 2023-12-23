@@ -16,21 +16,20 @@ interface Props {
 
 function LikeThread({ threadId, currentUserId }: Props) {
   // check if it is liked or not from database
+  const fetchLikes = async (threadId: string) => {
+    try {
+      let likes = await isLiked(JSON.parse(threadId), currentUserId);
+      if (likes.length > 0) {
+        setLiked(true);
+      }
+    } catch (error) {
+      console.error("Error fetching likes:", error);
+    }
+  };
   const [liked, setLiked] = useState(false);
   useEffect(() => {
-    const fetchLikes = async () => {
-      try {
-        let likes = await isLiked(JSON.parse(threadId), currentUserId);
-        if (likes.length > 0) {
-          setLiked(true);
-        }
-      } catch (error) {
-        console.error("Error fetching likes:", error);
-      }
-    };
-
-    fetchLikes();
-  }, [threadId, currentUserId]);
+    fetchLikes(threadId);
+  }, [threadId]);
 
   const pathname = usePathname();
   const handleLikeClick = async () => {

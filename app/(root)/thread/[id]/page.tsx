@@ -21,7 +21,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       <div>
         <ThreadCard
           key={thread._id}
-          likedBy={thread.likedBy}
+          likedBy={thread.likes}
           id={thread._id}
           currentUserId={user?.id || ""}
           parentId={thread.parentId}
@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         {thread.children.map((childItem: any) => {
           return (
             <ThreadCard
-              likedBy={childItem.likedBy}
+              likedBy={childItem.likes}
               key={childItem._id}
               id={childItem._id}
               currentUserId={user?.id || ""}
