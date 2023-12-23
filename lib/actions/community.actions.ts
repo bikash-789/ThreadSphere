@@ -106,7 +106,7 @@ export async function fetchCommunityPosts(id: string) {
 export async function fetchCommunities({
   searchString = "",
   pageNumber = 1,
-  pageSize = 20,
+  pageSize = 25,
   sortBy = "desc",
 }: {
   searchString?: string;
