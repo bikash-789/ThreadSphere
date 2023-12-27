@@ -48,7 +48,15 @@ const ProfileHeader = ({
 
       <div className="my-2 lg:my-4 w-full flex justify-between lg:justify-start gap-x-3">
         <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
-          <Link href="/update-profile">Edit Profile</Link>
+          <Link
+            href={
+              type === "Community"
+                ? `/communities/update/${accountId}`
+                : `/profile/update/${authUserId}`
+            }
+          >
+            Edit Profile
+          </Link>
         </button>
         <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
           <Link href="">Share Profile</Link>
