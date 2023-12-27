@@ -106,7 +106,7 @@ export async function fetchCommunityPosts(id: string) {
 export async function fetchCommunities({
   searchString = "",
   pageNumber = 1,
-  pageSize = 25,
+  pageSize = 20,
   sortBy = "desc",
 }: {
   searchString?: string;
@@ -245,6 +245,7 @@ export async function removeUserFromCommunity(
 export async function updateCommunityInfo(
   communityId: string,
   name: string,
+  bio: string,
   username: string,
   image: string
 ) {
@@ -254,7 +255,7 @@ export async function updateCommunityInfo(
     // Find the community by its _id and update the information
     const updatedCommunity = await Community.findOneAndUpdate(
       { id: communityId },
-      { name, username, image }
+      { name, username, image, bio }
     );
 
     if (!updatedCommunity) {
