@@ -67,20 +67,23 @@ export const POST = async (request: Request) => {
     // Show what evnt?.data sends from above resource
     const { id, name, slug, logo_url, image_url, created_by } =
       evnt?.data ?? {};
-
+    console.log(evnt?.data ?? {});
     try {
       // @ts-ignore
-      await createCommunity(
+      await createCommunity({
         // @ts-ignore
-        id,
-        name,
-        slug,
-        logo_url || image_url,
-        "org bio",
-        created_by
-      );
+        id: id,
+        name: name,
+        username: slug,
+        image: logo_url || image_url,
+        bio: "org bio",
+        createdBy: created_by,
+      });
 
-      return NextResponse.json({ message: "User created" }, { status: 201 });
+      return NextResponse.json(
+        { message: "Community created" },
+        { status: 201 }
+      );
     } catch (err) {
       console.log(err);
       return NextResponse.json(
