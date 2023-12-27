@@ -69,15 +69,9 @@ export const POST = async (request: Request) => {
       evnt?.data ?? {};
 
     try {
+      const img = logo_url || image_url;
       // @ts-ignore
-      await createCommunity({
-        id,
-        name,
-        slug,
-        image: logo_url || image_url,
-        bio: "org bio",
-        created_by,
-      });
+      await createCommunity(id, name, slug, img, "org bio", created_by);
 
       return NextResponse.json({ message: "User created" }, { status: 201 });
     } catch (err) {
