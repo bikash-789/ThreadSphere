@@ -6,7 +6,6 @@ import { currentUser } from "@clerk/nextjs";
 
 import Pagination from "@/components/shared/Pagination";
 
-
 const Page = async ({
   searchParams,
 }: {
@@ -21,7 +20,7 @@ const Page = async ({
   const result = await fetchCommunities({
     searchString: searchParams.q,
     pageNumber: searchParams?.page ? +searchParams.page : 1,
-    pageSize: 25,
+    pageSize: 20,
   });
 
   return (
@@ -30,7 +29,7 @@ const Page = async ({
       {/* Search bar */}
       <Searchbar routeType="communities" />
       <div className="mt-14 flex flex-col lg:flex-row lg:flex-wrap gap-9">
-        {result.communities.length === 0 ? (
+        {result.communities && result.communities.length === 0 ? (
           <p className="no-result">No communities</p>
         ) : (
           <>
