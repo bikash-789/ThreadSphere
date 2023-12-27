@@ -187,11 +187,11 @@ function ThreadCard({
         </Link>
       )}
       {/* Date */}
-      {
+      {!community && (
         <p className="text-subtle-medium text-gray-1 mt-5">
           {formatDateString(createdAt)}
         </p>
-      }
+      )}
     </article>
   );
 }
