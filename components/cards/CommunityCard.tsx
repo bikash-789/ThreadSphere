@@ -48,12 +48,12 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
           <div className="flex items-center">
             {members.map((member, index) => (
               <div
+                key={index}
                 className={`${
                   index !== 0 && "-ml-[12px]"
                 } w-[28px] h-[28px] overflow-clip rounded-full `}
               >
                 <Image
-                  key={index}
                   src={member.image}
                   alt={`user_${index}`}
                   width={28}
