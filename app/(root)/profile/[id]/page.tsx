@@ -5,7 +5,7 @@ import { profileTabs } from "@/constants";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import Image from "next/image";
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 
 async function Page({ params }: { params: { id: string } }) {
   const user = await currentUser();
@@ -22,6 +22,7 @@ async function Page({ params }: { params: { id: string } }) {
         authUserId={user.id}
         name={userInfo.name}
         username={userInfo.username}
+        type="User"
         imgUrl={userInfo.image}
         bio={userInfo.bio}
       />
