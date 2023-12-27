@@ -6,7 +6,7 @@ import Community from "../models/community.model";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
 import { connectToDB } from "../mongoose";
-
+import Like from "../models/like.model";
 export async function fetchUser(userId: string) {
   try {
     connectToDB();
@@ -159,10 +159,10 @@ export async function getActivity(userId: string) {
     const userThreads = await Thread.find({ author: userId })
       .populate({
         path: "likes",
-        model: "Like",
+        model: Like,
         populate: {
           path: "likedBy",
-          model: "User",
+          model: User,
           select: "_id name image",
         },
       })
