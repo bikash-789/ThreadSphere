@@ -10,7 +10,7 @@ interface Props {
   bio: string;
   type?: "User" | "Community";
 }
-const ProfileHeader = ({
+const ProfileHeader = async ({
   accountId,
   authUserId,
   name,
@@ -41,20 +41,16 @@ const ProfileHeader = ({
       </div>
 
       <div className="my-2 lg:my-4 w-full flex justify-between lg:justify-start gap-x-3">
-        <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
-          <Link
-            href={
-              type === "Community"
-                ? `/communities/update/${accountId}`
-                : `/profile/update/${authUserId}`
-            }
-          >
-            Edit Profile
-          </Link>
-        </button>
-        <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
-          <Link href="">Share Profile</Link>
-        </button>
+        {accountId === authUserId && (
+          <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
+            <Link href={`/profile/update/${authUserId}`}>Edit Profile</Link>
+          </button>
+        )}
+        {accountId !== authUserId && (
+          <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
+            <Link href={`/profile/update/${accountId}`}>Share Profile</Link>
+          </button>
+        )}
       </div>
     </div>
   );
