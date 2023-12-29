@@ -1,9 +1,9 @@
 import { Avatar } from "@radix-ui/themes";
-import Image from "next/image";
 import Link from "next/link";
 interface Props {
   accountId: string;
   authUserId: string;
+  adminId: string;
   name: string;
   username: string;
   imgUrl: string;
@@ -13,6 +13,7 @@ interface Props {
 const ProfileHeader = async ({
   accountId,
   authUserId,
+  adminId,
   name,
   username,
   imgUrl,
@@ -46,9 +47,22 @@ const ProfileHeader = async ({
             <Link href={`/profile/update/${authUserId}`}>Edit Profile</Link>
           </button>
         )}
+        {type === "Community" && adminId === authUserId && (
+          <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
+            <Link href={`/communities/update/${accountId}`}>Edit Details</Link>
+          </button>
+        )}
         {accountId !== authUserId && (
           <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
-            <Link href={`/profile/update/${accountId}`}>Share Profile</Link>
+            <Link
+              href={
+                type === "Community"
+                  ? `/communities/${accountId}`
+                  : `/profile/update/${accountId}`
+              }
+            >
+              Share Profile
+            </Link>
           </button>
         )}
       </div>

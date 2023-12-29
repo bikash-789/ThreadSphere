@@ -19,6 +19,7 @@ async function Page({ params }: { params: { id: string } }) {
     <section>
       <ProfileHeader
         accountId={userInfo.id}
+        adminId={user.id}
         authUserId={user.id}
         name={userInfo.name}
         username={userInfo.username}

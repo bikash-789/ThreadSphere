@@ -18,6 +18,7 @@ async function Page({ params }: { params: { id: string } }) {
       <ProfileHeader
         accountId={communityDetails.id}
         authUserId={user.id}
+        adminId={communityDetails.createdBy.id}
         name={communityDetails.name}
         username={communityDetails.username}
         imgUrl={communityDetails.image}
