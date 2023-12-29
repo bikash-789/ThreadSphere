@@ -25,21 +25,22 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
       })
       .populate({
         path: "community",
-        model: "Community",
+        model: Community,
       })
       .populate({
         path: "likes",
-        model: "Like",
+        model: Like,
         select: "_id threadId likedBy",
       })
       .populate({
         path: "children",
         populate: {
           path: "author",
-          model: "User",
+          model: User,
           select: "_id name parentId image",
         },
-      });
+      })
+      .lean();
 
     const totalPostsCount = await Thread.countDocuments({
       parentId: { $in: [null, undefined] },
@@ -211,6 +212,7 @@ export async function fetchThreadById(threadId: string) {
           },
         ],
       })
+      .lean()
       .exec();
 
     return thread;

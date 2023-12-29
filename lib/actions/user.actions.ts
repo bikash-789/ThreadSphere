@@ -166,15 +166,19 @@ export async function getActivity(userId: string) {
           select: "_id name image",
         },
       })
+      .sort({ createdAt: "desc" })
       .lean()
       .exec();
+
     // 2. Extract and filter likes from user threads
     const likes = userThreads.reduce((acc, thread) => {
       return acc.concat(
-        thread.likes.filter(
-          (like: any) =>
-            like.likedBy._id.toString() !== thread.author._id.toString()
-        )
+        thread.likes
+          .filter(
+            (like: any) =>
+              like.likedBy._id.toString() !== thread.author._id.toString()
+          )
+          .map((like: any) => ({ ...like, type: "like" }))
       );
     }, []);
 
@@ -184,20 +188,29 @@ export async function getActivity(userId: string) {
     }, []);
 
     // 4. Find replies excluding those authored by the same user
-    const replies = await Thread.find({
+    const replies: any = await Thread.find({
       _id: { $in: childThreadIds },
       author: { $ne: userId },
-    }).populate({
-      path: "author",
-      model: "User",
-      select: "name image _id",
-    });
+    })
+      .populate({
+        path: "author",
+        model: User,
+        select: "name image _id",
+      })
+      .sort({ createdAt: "desc" })
+      .lean()
+      .exec();
+    // Add a 'type' field to each reply object
+    const formattedReplies: any = replies.map((reply: any) => ({
+      ...reply,
+      type: "reply",
+    }));
 
-    // 5. Combine activity data
-    const activity = {
-      replies,
-      likes,
-    };
+    // 5. Combine and merge activity data based on createdAt timestamp
+    const activity: any = [...likes, ...formattedReplies].sort(
+      (a, b) => b.createdAt - a.createdAt
+    );
+
     // console.log(activity);
     return activity;
   } catch (error) {
