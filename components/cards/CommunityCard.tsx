@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import { Avatar } from "@radix-ui/themes";
 import { Button } from "../ui/button";
 
 interface Props {
@@ -18,12 +18,14 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
   return (
     <article className="community-card">
       <div className="flex flex-wrap items-center gap-3">
-        <Link href={`/communities/${id}`} className="relative h-12 w-12">
-          <Image
+        <Link href={`/communities/${id}`} className="relative w-12">
+          <Avatar
             src={imgUrl}
-            alt="community_logo"
-            fill
-            className="rounded-full object-cover"
+            alt="user_community"
+            size="3"
+            fallback={name[0]}
+            radius="full"
+            className="cursor-pointer"
           />
         </Link>
 
@@ -47,18 +49,13 @@ function CommunityCard({ id, name, username, imgUrl, bio, members }: Props) {
         {members && members.length > 0 && (
           <div className="flex items-center">
             {members.map((member, index) => (
-              <div
-                key={index}
-                className={`${
-                  index !== 0 && "-ml-[12px]"
-                } w-[28px] h-[28px] overflow-clip rounded-full `}
-              >
-                <Image
+              <div key={index} className={`${index !== 0 && "-ml-[12px]"}`}>
+                <Avatar
                   src={member.image}
                   alt={`user_${index}`}
-                  width={28}
-                  height={28}
-                  className={` rounded-full`}
+                  size="2"
+                  fallback="U"
+                  radius="full"
                 />
               </div>
             ))}

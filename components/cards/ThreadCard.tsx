@@ -3,7 +3,7 @@ import Link from "next/link";
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/DeleteThread";
 import LikeThread from "../forms/LikeThread";
-
+import { Avatar } from "@radix-ui/themes";
 interface Props {
   id: string;
   currentUserId: string;
@@ -59,11 +59,13 @@ function ThreadCard({
               href={`/profile/${author.id}`}
               className="relative h-11 w-11 overflow-clip rounded-full"
             >
-              <Image
+              <Avatar
                 src={author.image}
-                alt="user_community_image"
-                fill
-                className="cursor-pointer rounded-full"
+                alt="user_community"
+                size="3"
+                fallback={author?.name[0]}
+                radius="full"
+                className="cursor-pointer"
               />
             </Link>
 
@@ -142,18 +144,14 @@ function ThreadCard({
       {!isComment && comments.length > 0 && (
         <div className="ml-1 mt-3 flex items-center gap-2">
           {comments.slice(0, 2).map((comment, index) => (
-            <div
-              className={`${
-                index !== 0 && "-ml-[12px]"
-              } w-[24px] h-[24px] overflow-clip rounded-full `}
-            >
-              <Image
+            <div className={`${index !== 0 && "-ml-[12px]"}`}>
+              <Avatar
                 key={index}
                 src={comment.author.image}
                 alt={`user_${index}`}
-                width={24}
-                height={24}
-                className={` rounded-full`}
+                size="1"
+                fallback={"U"}
+                radius="full"
               />
             </div>
           ))}
@@ -172,15 +170,15 @@ function ThreadCard({
           className="mt-5 flex items-center"
         >
           <p className="text-subtle-medium text-gray-1">
-            <span>{formatDateString(createdAt)}</span>
-            <span>
+            <span className="inline-block">{formatDateString(createdAt)}</span>
+            <span className="inline-block">
               {community && ` - ${community.name} Community`}{" "}
-              <Image
+              <Avatar
                 src={community.image}
                 alt={community.name}
-                width={14}
-                height={14}
-                className="ml-1 rounded-full object-cover inline-block"
+                size="1"
+                fallback={community?.name[0]}
+                radius="full"
               />
             </span>
           </p>
