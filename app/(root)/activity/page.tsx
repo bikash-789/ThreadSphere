@@ -1,6 +1,5 @@
 import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDateString } from "@/lib/utils";
 import { Avatar } from "@radix-ui/themes";
