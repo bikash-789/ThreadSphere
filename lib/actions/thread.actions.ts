@@ -212,7 +212,6 @@ export async function fetchThreadById(threadId: string) {
           },
         ],
       })
-      .lean()
       .exec();
 
     return thread;
