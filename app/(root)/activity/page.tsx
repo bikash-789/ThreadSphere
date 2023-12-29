@@ -1,6 +1,5 @@
 import { fetchUser, getActivity } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDateString } from "@/lib/utils";
 import { Avatar } from "@radix-ui/themes";
@@ -23,7 +22,18 @@ const Page = async () => {
           activities.length > 0 &&
           activities.map((activity: any) => {
             return (
-              <Link key={activity._id} href={`/thread/${activity.parentId}`}>
+              <Link
+                key={
+                  activity.type == "reply"
+                    ? activity.parentId
+                    : activity.threadId
+                }
+                href={`/thread/${
+                  activity.type == "reply"
+                    ? activity.parentId
+                    : activity.threadId
+                }`}
+              >
                 <article className="activity-card">
                   <Avatar
                     src={
