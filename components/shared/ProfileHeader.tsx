@@ -10,7 +10,7 @@ interface Props {
   username: string;
   imgUrl: string;
   bio: string;
-  type: "User" | "Community";
+  type: string;
 }
 
 const ProfileHeader = async ({
@@ -56,7 +56,6 @@ const ProfileHeader = async ({
           </button>
         )}
         <ShareButton
-          adminId={adminId}
           type={type}
           authUserId={authUserId}
           accountId={accountId}
