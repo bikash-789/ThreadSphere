@@ -21,6 +21,7 @@ import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { updateUser } from "@/lib/actions/user.actions";
 import { usePathname, useRouter } from "next/navigation";
+import { Avatar } from "@radix-ui/themes";
 
 // Define the type for the component props
 interface Props {
@@ -114,21 +115,20 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
             <FormItem className="flex items-center gap-4">
               <FormLabel className="account-form_image-label">
                 {field.value ? (
-                  <Image
+                  <Avatar
                     src={field.value}
                     alt="profile_icon"
-                    width={96}
-                    height={96}
-                    priority
-                    className="rounded-full object-contain"
+                    size={"7"}
+                    radius="full"
+                    fallback="U"
                   />
                 ) : (
-                  <Image
+                  <Avatar
                     src="/assets/profile.svg"
                     alt="profile_icon"
-                    width={24}
-                    height={24}
-                    className="object-contain"
+                    size={"7"}
+                    radius="full"
+                    fallback="U"
                   />
                 )}
               </FormLabel>
