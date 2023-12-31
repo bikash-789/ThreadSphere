@@ -1,5 +1,7 @@
 import { Avatar } from "@radix-ui/themes";
 import Link from "next/link";
+import ShareButton from "../ui/ShareButton";
+
 interface Props {
   accountId: string;
   authUserId: string;
@@ -8,8 +10,9 @@ interface Props {
   username: string;
   imgUrl: string;
   bio: string;
-  type?: "User" | "Community";
+  type: "User" | "Community";
 }
+
 const ProfileHeader = async ({
   accountId,
   authUserId,
@@ -42,7 +45,7 @@ const ProfileHeader = async ({
       </div>
 
       <div className="my-2 lg:my-4 w-full flex justify-between lg:justify-start gap-x-3">
-        {accountId === authUserId && (
+        {type === "User" && accountId === authUserId && (
           <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
             <Link href={`/profile/update/${authUserId}`}>Edit Profile</Link>
           </button>
@@ -52,19 +55,12 @@ const ProfileHeader = async ({
             <Link href={`/communities/update/${accountId}`}>Edit Details</Link>
           </button>
         )}
-        {accountId !== authUserId && (
-          <button className="text-white border-[1px] border-slate-500 py-1 px-3 text-small-regular rounded-md">
-            <Link
-              href={
-                type === "Community"
-                  ? `/communities/${accountId}`
-                  : `/profile/update/${accountId}`
-              }
-            >
-              Share Profile
-            </Link>
-          </button>
-        )}
+        <ShareButton
+          adminId={adminId}
+          type={type}
+          authUserId={authUserId}
+          accountId={accountId}
+        />
       </div>
     </div>
   );
